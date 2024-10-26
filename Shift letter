@@ -1,0 +1,17 @@
+/**
+ * Shift letter
+ *
+ * Shift a letter right by the given number.
+ * Wrap the letter around if it reaches the end of the alphabet.
+ *
+ * @param {string} letter A single uppercase English letter, or a space
+ * @param {Number} shift The number by which to shift the letter
+ * @returns {string} The letter, shifted appropriately, if a letter, otherwise a space.
+ */
+function shiftLetter(letter, shift) {
+    if (letter === ' ') return ' ';
+    const asciiA = 'A'.charCodeAt(0);
+    const letterCode = letter.charCodeAt(0) - asciiA;
+    const shiftedCode = (letterCode + shift) % 26;
+    return String.fromCharCode(asciiA + shiftedCode);
+}
