@@ -1,8 +1,49 @@
 /**
+ * Shift letter
+ *
+ * Shift a letter right by the given number.
+ * Wrap the letter around if it reaches the end of the alphabet.
+ *
+ * @param {string} letter A single uppercase English letter, or a space
+ * @param {Number} shift The number by which to shift the letter
+ * @returns {string} The letter, shifted appropriately, if a letter, otherwise a space.
+ */
+function shiftLetter(letter, shift) {
+    if (letter === ' ') return ' ';
+    const asciiA = 'A'.charCodeAt(0);
+    const letterCode = letter.charCodeAt(0) - asciiA;
+    const shiftedCode = (letterCode + shift) % 26;
+    return String.fromCharCode(asciiA + shiftedCode);
+}
+
+/**
+ * Caesar cipher
+ *
+ * Apply a shift number to a string of uppercase English letters and spaces.
+ *
+ * @param {string} message A string of uppercase English letters and/or spaces
+ * @param {Number} shift The number by which to shift the letters
+ * @returns {string} The message, shifted appropriately.
+ */
+function caesarCipher(message, shift) {
+    function shiftLetter(letter, shift) {
+        if (letter === ' ') return ' ';
+        const asciiA = 'A'.charCodeAt(0);
+        const letterCode = letter.charCodeAt(0) - asciiA;
+        const shiftedCode = (letterCode + shift) % 26;
+        return String.fromCharCode(asciiA + shiftedCode);
+    }
+
+    return message
+        .split('')
+        .map(letter => shiftLetter(letter, shift))
+        .join('');
+}
+
+/**
  * Shift by letter
  *
  * Shift a letter to the right using the number equivalent of another letter.
- * The shift letter is any letter from A to Z, where A represents 0, B represents 1, ..., Z represents 25.
  *
  * @param {string} letter A single uppercase English letter, or a space
  * @param {string} letterShift A single uppercase English letter
@@ -19,6 +60,48 @@ function shiftByLetter(letter, letterShift) {
     }
 
     return String.fromCharCode(newCharCode);
+}
+
+/**
+ * Vigenere cipher
+ *
+ * Encrypt a message using a keyphrase instead of a static number.
+ * Every letter in the message is shifted by the number represented by the respective letter in the key.
+ * Spaces are ignored.
+ *
+ * Example:
+ * vigenereCipher('A C', 'KEY') -> 'K A'
+ *
+ * If needed, the keyphrase is extended to match the length of the message.
+ * If the key is 'KEY' and the message is 'LONGTEXT', the key will be extended to 'KEYKEYKE'.
+ *
+ * @param {string} message A string of uppercase English letters and/or spaces
+ * @param {string} key A string of uppercase English letters, no spaces. Will not exceed the length of the message.
+ * @returns {string} The message, shifted appropriately
+ */
+function vigenereCipher(message, key) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    function shiftChar(char, keyChar) {
+        const charIndex = alphabet.indexOf(char);
+        const keyIndex = alphabet.indexOf(keyChar);
+        return alphabet[(charIndex + keyIndex) % 26];
+    }
+
+    let encryptedMessage = "";
+    let keyIndex = 0;
+
+    for (let i = 0; i < message.length; i++) {
+        if (message[i] === " ") {
+            encryptedMessage += " ";
+            keyIndex++;
+        } else {
+            encryptedMessage += shiftChar(message[i], key[keyIndex % key.length]);
+            keyIndex++;
+        }
+    }
+
+    return encryptedMessage;
 }
 
 /**
@@ -57,7 +140,7 @@ function scytaleCipher(message, shift) {
 /**
  * Scytale decipher
  *
- * Decrypts a message that was originally encrypted with the `scytaleCipher` function above.
+ * Decrypts a message that was originally encrypted with the `scytaleCipher` function.
  *
  * @param {string} message A string of uppercase English letters and underscores. Underscores represent spaces.
  * @param {number} shift A positive integer that does not exceed the length of the message
@@ -77,38 +160,4 @@ function scytaleDecipher(message, shift) {
     }
 
     return decipheredMessage;
-}
-
-/**
- * Vigenere cipher
- *
- * Encrypt a message using a keyphrase instead of a static number.
- * Every letter in the message is shifted by the number represented by the respective letter in the key.
- *
- * @param {string} message A string of uppercase English letters and/or spaces
- * @param {string} key A string of uppercase English letters, no spaces. Will not exceed the length of the message.
- * @returns {string} The message, shifted appropriately
- */
-function vigenereCipher(message, key) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    function shiftChar(char, keyChar) {
-        const charIndex = alphabet.indexOf(char);
-        const keyIndex = alphabet.indexOf(keyChar);
-        return alphabet[(charIndex + keyIndex) % 26];
-    }
-
-    let encryptedMessage = "";
-    let keyIndex = 0;
-
-    for (let i = 0; i < message.length; i++) {
-        if (message[i] === " ") {
-            encryptedMessage += " ";
-        } else {
-            encryptedMessage += shiftChar(message[i], key[keyIndex % key.length]);
-            keyIndex++;
-        }
-    }
-
-    return encryptedMessage;
 }
